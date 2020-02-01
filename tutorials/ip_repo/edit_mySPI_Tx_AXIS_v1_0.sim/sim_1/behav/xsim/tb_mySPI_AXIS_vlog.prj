@@ -1,0 +1,12 @@
+# compile verilog/system verilog design source files
+verilog   \
+"../../../../mySPI_Tx_AXIS_1.0/hdl/mySPI_Tx_AXIS_v1_0_S00_AXIS.v" \
+
+verilog work  \
+"../../../../mySPI_Tx_AXIS_1.0/hdl/tb_mySPI_AXIS.v" \
+
+# compile glbl module
+verilog work "glbl.v"
+
+# Do not sort compile order
+nosort
