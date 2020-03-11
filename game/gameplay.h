@@ -19,12 +19,17 @@ void displaySprite(int x, int y, int width, int height, int addr);
 //pointer to sprite address
 static volatile Xuint32 *slaveaddr_p = (Xuint32 *) XPAR_GPU_0_S00_AXI_BASEADDR;
 
+/*GAME CONSTANTS
+ * The constants that we use for the game
+ * */
 //gameplay constants
-const int END_SCORE = 100000;
+const int END_SCORE = 5000;
 const int NIGHT_INTERVAL = 100;
 const int SPEED_INTERVAL = 200;
 const int CACTI_INTERVAL = 400;
 const int PT_INTERVAL = 70;
+
+const int BASE_HEIGHT = 512;
 
 
 //addresses
@@ -39,8 +44,21 @@ const int SEVEN_ADDR = 0x020BFD0C;
 const int EIGHT_ADDR = 0x020C080C;
 const int NINE_ADDR = 0x020C130C;
 
-const int DINO_ADDR = 0x020C130C;
+const int DINO_ADDR = 0x020D830C;
 const int CACTUS_ADDR = 0x020C7B0C;
+const int PT_ADDR_0 = 0x020CED0C;
+
+//widths
+const int DINO_WIDTH = 64;
+const int CACTUS_WIDTH = 32;
+const int PT_WIDTH = 96;
+
+//heights
+const int DINO_HEIGHT = 47;
+const int CACTUS_HEIGHT  = 51;
+const int PT_HEIGHT = 76;
+
+
 
 
 
