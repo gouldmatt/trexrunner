@@ -11,10 +11,16 @@
 #include <xil_cache.h>
 #include "xparameters.h"
 #include <xgpio.h>
+#include "../helpers/InterruptHandler.h"
+
+
 
 void FlushCache();
 void InitializeButtons(XGpio* input);
 int ReadButtons(XGpio* input);
+
+XTmrCtr InitializeInterrupts();
+
 
 
 #endif /* SRC_APPINITIALIZER_H_ */
