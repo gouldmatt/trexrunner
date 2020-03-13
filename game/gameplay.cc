@@ -97,8 +97,15 @@ int gameplay(){
 	int score = 0;
 	bool nightModeActive = false;
 
-	    // white screen
+	if(!nightModeActive){
+		//display white screen
 		displaySprite(0,0,1280,1024,0x018D2008);
+	}
+	else{
+		//display black screen
+		displaySprite(0,0,1280,1024, NIGHT_SCREEN_ADDR);
+	}
+		
 
 
 	    for(score = 0; score < END_SCORE; score++){
@@ -132,8 +139,14 @@ int gameplay(){
 			// generate new cacti
 			if(score == nextCactiScore) {
 				 nextCactiScore = score+CACTI_INTERVAL+LFSR();
-
-				 Obstacle cactus(64,104,CACTUS_ADDR);
+				
+				 if(!nightModeActive){
+					 //display day mode
+					Obstacle cactus(64,104,CACTUS_ADDR);
+				 }
+				else{
+					Obstacle cactus(64, 104, CACTUS_NIGHT_ADDR);	
+				}
 
 				 cactus.x = 1290;
 				 cactus.y = 512;
