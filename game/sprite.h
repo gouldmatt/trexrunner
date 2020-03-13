@@ -60,11 +60,23 @@ class Dino : public Sprite {
     public:
         Dino();
 
+        Dino(int w, int h, int address_idle, int address_run_one, int address_run_two);
+
         bool detectCollision();
+
+        void idle();
+
+        void animateRun();
 
         void updateJump();
 
         bool isJumping; 
+
+        int addr_idle;
+
+        int addr_run_one;
+
+        int addr_run_two;
 };
 
 class Obstacle : public Sprite {

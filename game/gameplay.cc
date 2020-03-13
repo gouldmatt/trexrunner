@@ -10,7 +10,7 @@
 
 
 int LFSR(){
-	return 0;
+	return rand() % 100;
 }
 
 void displaySprite(int x, int y, int width, int height, int addr){
@@ -44,9 +44,25 @@ void displaySprite(int x, int y, int width, int height, int addr){
 	*(slaveaddr_p+0) = 0x00000000;
 }
 
-void displayScore(int score){
-	int scoreX = 1120;
-	int scoreY = 20;
+void switchBuffer(){
+
+	// switch buffer
+	*(slaveaddr_p+8) = 0x00000001;
+
+	//*(slaveaddr_p+8) = 0x00000000;
+
+	// switch buffer ack
+	int done =  *(slaveaddr_p+9);
+			while(done != 1){
+			done =  *(slaveaddr_p+9);
+	}
+
+	*(slaveaddr_p+8) = 0x00000000;
+}
+
+void displayScore(int x, int y, int score){
+	int scoreX = x;
+	int scoreY = y;
 	int offset = 0;
 	int digit = 0;
 
@@ -57,135 +73,154 @@ void displayScore(int score){
 		score = score / 10;
 
 		// increase the x pixel offset for next digit
-		offset = 18*i + 6;
+		offset = 18*i + 12;
 
 		if(digit == 0){
-			displaySprite(scoreX+offset,scoreY,32,22,ZERO_ADDR);
+			displaySprite(scoreX+offset,scoreY,NUM_WIDTH,NUM_HEIGHT,ZERO_ADDR);
 		} else if(digit == 1){
-			displaySprite(scoreX+offset,scoreY,32,22,ONE_ADDR);
+			displaySprite(scoreX+offset,scoreY,NUM_WIDTH,NUM_HEIGHT,ONE_ADDR);
 		} else if(digit == 2){
-			displaySprite(scoreX+offset,scoreY,32,22,TWO_ADDR);
+			displaySprite(scoreX+offset,scoreY,NUM_WIDTH,NUM_HEIGHT,TWO_ADDR);
 		} else if(digit == 3){
-			displaySprite(scoreX+offset,scoreY,32,22,THREE_ADDR);
+			displaySprite(scoreX+offset,scoreY,NUM_WIDTH,NUM_HEIGHT,THREE_ADDR);
 		} else if(digit == 4){
-			displaySprite(scoreX+offset,scoreY,32,22,FOUR_ADDR);
+			displaySprite(scoreX+offset,scoreY,NUM_WIDTH,NUM_HEIGHT,FOUR_ADDR);
 		} else if(digit == 5){
-			displaySprite(scoreX+offset,scoreY,32,22,FIVE_ADDR);
+			displaySprite(scoreX+offset,scoreY,NUM_WIDTH,NUM_HEIGHT,FIVE_ADDR);
 		} else if(digit == 6){
-			displaySprite(scoreX+offset,scoreY,32,22,SIX_ADDR);
+			displaySprite(scoreX+offset,scoreY,NUM_WIDTH,NUM_HEIGHT,SIX_ADDR);
 		} else if(digit == 7){
-			displaySprite(scoreX+offset,scoreY,32,22,SEVEN_ADDR);
+			displaySprite(scoreX+offset,scoreY,NUM_WIDTH,NUM_HEIGHT,SEVEN_ADDR);
 		} else if(digit == 8){
-		   displaySprite(scoreX+offset,scoreY,32,22,EIGHT_ADDR);
+		   displaySprite(scoreX+offset,scoreY,NUM_WIDTH,NUM_HEIGHT,EIGHT_ADDR);
 		} else { // 9
-		   displaySprite(scoreX+offset,scoreY,32,22,NINE_ADDR);
+		   displaySprite(scoreX+offset,scoreY,NUM_WIDTH,NUM_HEIGHT,NINE_ADDR);
 		}
 
 	}
 }
 
-int gameplay(){
-
-	Dino dino;
-
+int gameplay(int highScore){
 	std::vector<Obstacle> obstacles;
 
-	int movementDelay = 100000;
-	int obstacleMovement = 5;
-	int nextCactiScore = CACTI_INTERVAL+LFSR();
-	int nextPterodactylScore = PT_INTERVAL+LFSR();
+	// increasing amount to update sprites to create movement
+	int speedUpdatePixels = 4;
+
+	// distances that the first cacti and pt will be generated
+ 	int nextCactiDistance = CACTI_INTERVAL+LFSR();
+	int nextPterodactylDistance = PT_INTERVAL+LFSR();
+
+	int distance = 0;
 	int score = 0;
 	bool nightModeActive = false;
 
-	if(!nightModeActive){
-		//display white screen
-		displaySprite(0,0,1280,1024,0x018D2008);
-	}
-	else{
-		//display black screen
-		displaySprite(0,0,1280,1024, NIGHT_SCREEN_ADDR);
-	}
-		
+	// white screen
+   	displaySprite(0,0,SCREEN_WIDTH,SCREEN_HEIGHT,BLANK_SCR_ADDR);
 
+   	Dino dino(DINO_WIDTH,DINO_HEIGHT,DINO_IDLE_ADDR,DINO_RUN_1_ADDR,DINO_RUN_2_ADDR);
+   	dino.x = 100;
+   	dino.y = 512-DINO_HEIGHT+15;
 
-	    for(score = 0; score < END_SCORE; score++){
-			// clear buffer
+   	Sprite groundA(GROUND_WIDTH,GROUND_HEIGHT,GROUND_ADDR);
+   	groundA.x = 0;
+   	groundA.y = 512;
+    groundA.display();
 
-	    	// update score
-	    	displaySprite(1120,20,190,22,0x018D2008);
-	    	displayScore(score);
+    Sprite groundB(GROUND_WIDTH,GROUND_HEIGHT,GROUND_ADDR);
+    groundB.x = GROUND_WIDTH;
+    groundB.y = 512;
 
-			// update obstacle positions
-	    	for(int i = 0; i < obstacles.size(); i++){
-	    		obstacles[i].x--;
-	    		obstacles[i].display();
-	    	}
+	while(score != END_SCORE){
 
-	        // animate dino and move dino
+		// clear buffer
+	   	displaySprite(0,0,SCREEN_WIDTH,SCREEN_HEIGHT,BLANK_SCR_ADDR);
 
+	   	// update ground
+	    groundA.x -= speedUpdatePixels;
+	    groundA.display();
 
-			// check if obstacle hit
-			if(dino.detectCollision()){
-				 printf("Obstacle Hit!\n");
-				return(score);
-			}
+	    groundB.x -= speedUpdatePixels;
+	   	groundB.display();
 
-			// remove last obstacle if off the screen
-			if(obstacles[0].isOffScreen() && obstacles.size() == 1){
-				obstacles.erase(obstacles.begin());
-			}
-
-
-			// generate new cacti
-			if(score == nextCactiScore) {
-				 nextCactiScore = score+CACTI_INTERVAL+LFSR();
-				
-				 if(!nightModeActive){
-					 //display day mode
-					Obstacle cactus(64,104,CACTUS_ADDR);
-				 }
-				else{
-					Obstacle cactus(64, 104, CACTUS_NIGHT_ADDR);	
-				}
-
-				 cactus.x = 1290;
-				 cactus.y = 512;
-				 cactus.display();
-
-				 // push new cacti on to vector
-				 obstacles.push_back(cactus);
-			}
-
-			// generate new pterodactyl
-
-			// enable night mode if score is multiple of night
-			// mode interval
-			if(score % NIGHT_INTERVAL == 0 && score != 0) {
-				// set all sprites to night mode
-				if(nightModeActive){
-					printf("finish night mode\n");
-					nightModeActive = false;
-				} else {
-					nightModeActive = true;
-					printf("start night mode\n");
-				}
-			}
-
-			// move obstacles at increasing amount if score is multiple of
-			// speed interval
-			if(score % SPEED_INTERVAL == 0 && score != 0) {
-				// increase obstacleMovement
-				printf("increase obstacle speed\n");
-				movementDelay-=10;
-			}
-			/*
-			for(int delay = 0; delay < movementDelay; delay++){
-
-			}*/
-
+	    if(groundA.x < -GROUND_WIDTH){
+	    	groundA.x = GROUND_WIDTH;
+	    } else if (groundB.x < -GROUND_WIDTH){
+	    	groundB.x = GROUND_WIDTH;
 	    }
 
-	    return(score);
+
+
+		distance++;
+		if(distance % SCORE_INC_INTERVAL == 0){
+			score++;
+		}
+
+	   	displaySprite(890,0,HIGH_SCORE_WIDTH,HIGH_SCORE_HEIGHT,HIGH_SCORE_ADDR);
+		displayScore(950,0,highScore);
+		displayScore(1100,0,score);
+
+		// update obstacle positions
+		for(int i = 0; i < obstacles.size(); i++){
+			obstacles[i].x-=speedUpdatePixels;
+			obstacles[i].display();
+		}
+
+		// animate dino and move dino
+		if(distance % SCORE_INC_INTERVAL == 0){
+			dino.animateRun();
+		}
+		dino.display();
+
+		// check if obstacle hit
+		if(dino.detectCollision()){
+			 printf("Obstacle Hit!\n");
+			 dino.idle();
+			 break;
+		}
+
+		// remove last obstacle if off the screen
+		if(obstacles[0].isOffScreen() && obstacles.size() == 1){
+			obstacles.erase(obstacles.begin());
+		}
+
+
+		// generate new cacti
+		if(distance % nextCactiDistance == 0) {
+			nextCactiDistance = distance+CACTI_INTERVAL+LFSR();
+
+			 Obstacle cactus(CACTUS_WIDTH,CACTUS_HEIGHT,CACTUS_ADDR);
+
+			 cactus.x = 1290;
+			 cactus.y = 512-CACTUS_HEIGHT+23;
+			 cactus.display();
+
+			 // push new cacti on to vector
+			 obstacles.push_back(cactus);
+		}
+
+		// generate new pterodactyl
+
+		// enable night mode if score is multiple of night
+		// mode interval
+		if(distance % NIGHT_INTERVAL == 0) {
+			// set all sprites to night mode
+			if(nightModeActive){
+				printf("finish night mode\n");
+				nightModeActive = false;
+			} else {
+				nightModeActive = true;
+				printf("start night mode\n");
+			}
+		}
+
+		if(distance % SPEED_INTERVAL == 0) {
+			speedUpdatePixels++;
+		}
+
+		switchBuffer();
+	}
+
+	return(score);
 
 }
 

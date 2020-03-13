@@ -17,9 +17,9 @@
 
 void FlushCache();
 void InitializeButtons(XGpio* input);
-int ReadButtons(XGpio* input);
+int readButtons(XGpio input);
 
-XTmrCtr InitializeInterrupts();
+//XTmrCtr InitializeInterrupts();
 
 
 
