@@ -11,16 +11,19 @@
 #include <xil_cache.h>
 #include "xparameters.h"
 #include <xgpio.h>
-#include "../helpers/InterruptHandler.h"
+
+
+//push button constants
+const int BUTTON_NONE =  0b00000;
+const int BUTTON_CENTRE =  0b00001;
+const int BUTTON_UP  = 0b10000;
+const int BUTTON_DOWN = 0b00010;
+
 
 
 
 void FlushCache();
-void InitializeButtons(XGpio* input);
 int readButtons(XGpio input);
-
-//XTmrCtr InitializeInterrupts();
-
 
 
 #endif /* SRC_APPINITIALIZER_H_ */

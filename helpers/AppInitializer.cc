@@ -9,6 +9,8 @@
 
 #include "../helpers/AppInitializer.h"
 
+
+
 //Flushes the cache
 void FlushCache(){
 	Xil_DCacheDisable();
@@ -19,13 +21,7 @@ void FlushCache(){
 
 }
 
-//Initializes the buttons
-//Taken from: https://reference.digilentinc.com/learn/programmable-logic/tutorials/zedboard-getting-started-with-zynq/start
-void InitializeButtons(XGpio* input){
-	XGpio_Initialize(input, XPAR_GPIO_0_DEVICE_ID);
-	XGpio_SetDataDirection(input, XPAR_GPIO_0_DEVICE_ID, 0xF); //set first channel tristate buffer to input
 
-}
 
 //read the buttons
 //int ReadButtons(XGpio* input){
@@ -39,14 +35,18 @@ int readButtons(XGpio input){
 	int last = 0;
 	int count = 0;
 
-	while(count < 150000){
-		button_data = XGpio_DiscreteRead(&input, 1); //get button data
-		if(last == button_data){
-			count ++;
-		} else {
-			count = 0;
-		}
-		last = button_data;
-	}
-	return(last);
+	button_data = XGpio_DiscreteRead(&input, 1); //get button data
+//	while(count < 150000){
+//		button_data = XGpio_DiscreteRead(&input, 1); //get button data
+//		if(last == button_data){
+//			count ++;
+//		} else {
+//			count = 0;
+//		}
+//		last = button_data;
+//	}
+	return(button_data);
 }
+
+
+

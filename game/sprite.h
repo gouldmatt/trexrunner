@@ -31,6 +31,8 @@
 #include <sleep.h>
 #include <vector>
 
+
+
 static volatile Xuint32 *slaveaddrPtr = (Xuint32 *) XPAR_GPU_0_S00_AXI_BASEADDR;
 
 using namespace std;
@@ -39,7 +41,7 @@ class Sprite {
     public:
 		Sprite();
 
-        Sprite(int w, int h, int address);
+        Sprite(int w, int h, int dayAddress, int nightAddress);
 
         void display();
 
@@ -47,20 +49,22 @@ class Sprite {
 
         int y; 
 
-        int addr; 
+        int currAddr;
+
+        int dayAddr;
+
+        int nightAddr;
 
         int width; 
 
-        int height; 
+        int height;
 
-        bool isNightMode; 
+        bool isNight;
 };
 
 class Dino : public Sprite {
     public:
         Dino();
-
-        Dino(int w, int h, int address_idle, int address_run_one, int address_run_two);
 
         bool detectCollision();
 
@@ -70,20 +74,22 @@ class Dino : public Sprite {
 
         void updateJump();
 
-        bool isJumping; 
+        void updateDuck();
 
-        int addr_idle;
+        void falling();
 
-        int addr_run_one;
+        bool isJumping;
 
-        int addr_run_two;
+        bool isFalling;
+
+        bool isJumpIdle;
 };
 
 class Obstacle : public Sprite {
     public:
         Obstacle();
 
-        Obstacle(int w, int h, int address);
+        Obstacle(int w, int h, int dayAddress, int nightAddress);
 
         bool isOffScreen();
 };
