@@ -135,6 +135,9 @@ int main(){
 
     while(1){
     	trexRunner.GameplayInit();
+	trexRunner.GameplayInit();
+
+    while(1){
     	if(trexRunner.bStartGame == true){
     		score = trexRunner.gameplay(highScores[0]);
     		trexRunner.bStartGame = false;
@@ -145,6 +148,7 @@ int main(){
     		highScores.pop_back();
 
     		//display high scores
+<<<<<<< HEAD
     		trexRunner.displaySprite(0,0,SCREEN_WIDTH,100,BLANK_SCR_ADDR);
     		trexRunner.displaySprite(890,0,HIGH_SCORE_WIDTH,HIGH_SCORE_HEIGHT,HIGH_SCORE_ADDR);
     		trexRunner.displayScore(950,0,highScores[0]);
@@ -152,13 +156,28 @@ int main(){
 
     		for(int i = 0; i < 5; i++){
     		   trexRunner.displayScore(575,240+50*i,highScores[i]);
+=======
+    		trexRunner.displaySprite(0,0,SCREEN_WIDTH,100,BLANK_ADDR);
+    		trexRunner.displaySprite(890,0,HIGH_SCORE_WIDTH,HIGH_SCORE_HEIGHT,HIGH_SCORE_ADDR);
+    		trexRunner.displayScore(950,0,highScores[0],false);
+    		trexRunner.displayScore(1100,0,score,false);
+
+    		for(int i = 0; i < 5; i++){
+    		   trexRunner.displayScore(575,140+50*i,highScores[i],false);
+>>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
     		}
 
     		//Option to restart
 
+<<<<<<< HEAD
     		trexRunner.displaySprite(592,500,RESTART_WIDTH,RESTART_HEIGHT,RESTART_ADDR);
 
     		trexRunner.displaySprite(448,180,GAME_OVER_WIDTH,GAME_OVER_HEIGHT,GAME_OVER_ADDR);
+=======
+    		trexRunner.displaySprite(592,400,RESTART_WIDTH,RESTART_HEIGHT,RESTART_ADDR);
+
+    		trexRunner.displaySprite(448,80,GAME_OVER_WIDTH,GAME_OVER_HEIGHT,GAME_OVER_ADDR);
+>>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
     		trexRunner.switchBuffer();
 
     		// display high scores

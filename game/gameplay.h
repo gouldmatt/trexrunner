@@ -26,7 +26,11 @@ class GamePlay{
 
 	int LFSR(); //random number generator
 	int gameplay(int highScore); //main gameplay
+<<<<<<< HEAD
 	void displayScore(int x, int y, int score); //display score
+=======
+	void displayScore(int x, int y, int score, bool nightMode); //display score
+>>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
 	void displaySprite(int x, int y, int width, int height, int addr);
 	void switchBuffer();
 	void GameplayInit(); //initial screen of the game

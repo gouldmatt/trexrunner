@@ -41,7 +41,11 @@ class Sprite {
     public:
 		Sprite();
 
+<<<<<<< HEAD
         Sprite(int w, int h, int address);
+=======
+        Sprite(int w, int h, int dayAddress, int nightAddress);
+>>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
 
         void display();
 
@@ -49,6 +53,7 @@ class Sprite {
 
         int y; 
 
+<<<<<<< HEAD
         int addr; 
 
         int width; 
@@ -56,14 +61,30 @@ class Sprite {
         int height; 
 
         bool isNightMode; 
+=======
+        int currAddr;
+
+        int dayAddr;
+
+        int nightAddr;
+
+        int width; 
+
+        int height;
+
+        bool isNight;
+>>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
 };
 
 class Dino : public Sprite {
     public:
         Dino();
 
+<<<<<<< HEAD
         Dino(int w, int h, int address_idle, int address_run_one, int address_run_two);
 
+=======
+>>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
         bool detectCollision();
 
         void idle();
@@ -81,19 +102,26 @@ class Dino : public Sprite {
         bool isFalling;
 
         bool isJumpIdle;
+<<<<<<< HEAD
 
         int addr_idle;
 
         int addr_run_one;
 
         int addr_run_two;
+=======
+>>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
 };
 
 class Obstacle : public Sprite {
     public:
         Obstacle();
 
+<<<<<<< HEAD
         Obstacle(int w, int h, int address);
+=======
+        Obstacle(int w, int h, int dayAddress, int nightAddress);
+>>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
 
         bool isOffScreen();
 };
