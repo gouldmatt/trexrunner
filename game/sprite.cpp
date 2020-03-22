@@ -42,11 +42,12 @@ Sprite::Sprite(int w, int h, int dayAddress, int nightAddress){
 	height = h;
 	dayAddr = dayAddress;
 	nightAddr = nightAddress;
-	currAddr = dayAddress;
 	isNight = false;
 }
 
 void Sprite::display(){
+	int currAddr = 0;
+
 	if(isNight){
 		currAddr = nightAddr;
 	} else {
@@ -136,7 +137,7 @@ void Dino::animateRun(){
 
 bool Dino::detectCollision(){
 	// for now generate a random number to determine if collision
-	int randVal = rand() % 700;
+	int randVal = rand() ;//% 700;
 	if(randVal == 10){
 		return(true);
 	} else {
@@ -154,8 +155,37 @@ Obstacle::Obstacle(int w, int h, int dayAddress, int nightAddress){
     height = h;
 	dayAddr = dayAddress;
 	nightAddr = nightAddress;
-	currAddr = dayAddress;
 	isNight = false;
+	frameOneDay = 0;
+	frameOneNight = 0;
+	frameTwoDay = 0;
+	frameTwoNight = 0;
+}
+
+Obstacle::Obstacle(int w, int h, int dayAddress, int dayAddressTwo, int nightAddress, int nightAddressTwo){
+	width = w;
+	height = h;
+	dayAddr = dayAddress;
+	nightAddr = nightAddress;
+	isNight = false;
+	frameOneDay = dayAddress;
+	frameOneNight = nightAddress;
+	frameTwoDay = dayAddressTwo;
+	frameTwoNight = nightAddressTwo;
+}
+
+
+void Obstacle::animate(){
+	if(frameOneDay != 0 && frameOneNight != 0){
+		if(dayAddr == frameOneDay){
+			dayAddr = frameTwoDay;
+			nightAddr = frameTwoNight;
+		} else{
+			dayAddr = frameOneDay;
+			nightAddr = frameOneNight;
+		}
+
+	}
 }
 
 bool Obstacle::isOffScreen(){

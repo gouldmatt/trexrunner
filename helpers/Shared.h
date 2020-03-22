@@ -16,11 +16,12 @@ const int SPEED_INTERVAL = 100;
 const int SCORE_INC_INTERVAL = 3;
 
 const int BASE_HEIGHT = 512;
-const int JUMP_INTERVAL = 50;
+const int JUMP_INTERVAL = 60;//50;
 const int IDLE_COUNT = 3;
 
 const int CACTI_INTERVAL = 50;
-const int PT_INTERVAL = 70;
+const int PT_INTERVAL = 250;
+const int PT_ANIMATION_INTERVAL = 6;
 const int BACK_GROUND_INTERVAL = 42;
 
 

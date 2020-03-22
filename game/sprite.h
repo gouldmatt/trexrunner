@@ -31,8 +31,6 @@
 #include <sleep.h>
 #include <vector>
 
-
-
 static volatile Xuint32 *slaveaddrPtr = (Xuint32 *) XPAR_GPU_0_S00_AXI_BASEADDR;
 
 using namespace std;
@@ -48,8 +46,6 @@ class Sprite {
         int x; 
 
         int y; 
-
-        int currAddr;
 
         int dayAddr;
 
@@ -90,6 +86,18 @@ class Obstacle : public Sprite {
         Obstacle();
 
         Obstacle(int w, int h, int dayAddress, int nightAddress);
+
+        Obstacle(int w, int h, int dayAddress, int dayAddressTwo, int nightAddress, int nightAddressTwo);
+
+        int frameOneDay = 0;
+
+        int frameOneNight = 0;
+
+        int frameTwoDay = 0;
+
+        int frameTwoNight = 0;
+
+        void animate();
 
         bool isOffScreen();
 };
