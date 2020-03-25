@@ -11,6 +11,7 @@
 #include "xbasic_types.h"
 #include "../helpers/Shared.h"
 #include <vector>
+#include "xgpio.h"
 
 
 class GamePlay{
@@ -22,15 +23,12 @@ class GamePlay{
 	bool volatile bDuckState;
 	bool bStartGame;
 	bool bFalling;
+    bool bGameOver;
 
 
 	int LFSR(); //random number generator
-	int gameplay(int highScore); //main gameplay
-<<<<<<< HEAD
-	void displayScore(int x, int y, int score); //display score
-=======
+	int gameplay(int highScore, XGpio *input_); //main gameplay
 	void displayScore(int x, int y, int score, bool nightMode); //display score
->>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
 	void displaySprite(int x, int y, int width, int height, int addr);
 	void switchBuffer();
 	void GameplayInit(); //initial screen of the game

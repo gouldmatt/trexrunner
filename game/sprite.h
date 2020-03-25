@@ -41,11 +41,7 @@ class Sprite {
     public:
 		Sprite();
 
-<<<<<<< HEAD
-        Sprite(int w, int h, int address);
-=======
         Sprite(int w, int h, int dayAddress, int nightAddress);
->>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
 
         void display();
 
@@ -53,15 +49,6 @@ class Sprite {
 
         int y; 
 
-<<<<<<< HEAD
-        int addr; 
-
-        int width; 
-
-        int height; 
-
-        bool isNightMode; 
-=======
         int currAddr;
 
         int dayAddr;
@@ -73,19 +60,13 @@ class Sprite {
         int height;
 
         bool isNight;
->>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
 };
 
 class Dino : public Sprite {
     public:
         Dino();
 
-<<<<<<< HEAD
-        Dino(int w, int h, int address_idle, int address_run_one, int address_run_two);
-
-=======
->>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
-        bool detectCollision();
+        bool detectCollision(int obstacleX, int obstacleY);
 
         void idle();
 
@@ -97,32 +78,28 @@ class Dino : public Sprite {
 
         void falling();
 
+        void showDead();
+
         bool isJumping;
 
         bool isFalling;
 
         bool isJumpIdle;
-<<<<<<< HEAD
 
-        int addr_idle;
+        bool isDead;
 
         int addr_run_one;
 
         int addr_run_two;
-=======
->>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
+
 };
 
 class Obstacle : public Sprite {
     public:
+		int distanceX;
         Obstacle();
 
-<<<<<<< HEAD
-        Obstacle(int w, int h, int address);
-=======
         Obstacle(int w, int h, int dayAddress, int nightAddress);
->>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
-
         bool isOffScreen();
 };
 

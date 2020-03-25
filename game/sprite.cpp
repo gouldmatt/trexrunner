@@ -37,18 +37,6 @@ Sprite::Sprite(){
 
 }
 
-<<<<<<< HEAD
-
-Sprite::Sprite(int w, int h, int address){
-	width = w;
-	height = h;
-	addr = address;
-}
-
-void Sprite::display(){
-	// sprite addr
-	*(slaveaddrPtr+3) = addr;
-=======
 Sprite::Sprite(int w, int h, int dayAddress, int nightAddress){
 	width = w;
 	height = h;
@@ -67,7 +55,6 @@ void Sprite::display(){
 
 	// sprite addr
 	*(slaveaddrPtr+3) = currAddr;
->>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
 
 	// x
 	*(slaveaddrPtr+4) = x;
@@ -102,20 +89,8 @@ Dino::Dino(){
 	isJumping = false;
 	isFalling = false;
 	isJumpIdle = false;
-<<<<<<< HEAD
-}
-
-Dino::Dino(int w, int h, int address_idle, int address_run_one, int address_run_two){
-	width = w;
-	height = h;
-	addr_idle = address_idle;
-	addr = address_idle;
-	addr_run_one = address_run_one;
-	addr_run_two = address_run_two;
-}
-
-=======
 	isNight = false;
+	isDead = false;
 
 	width = DINO_IDLE_WIDTH;
 	height = DINO_IDLE_HEIGHT;
@@ -123,7 +98,6 @@ Dino::Dino(int w, int h, int address_idle, int address_run_one, int address_run_
 	dayAddr = DINO_IDLE_ADDR;
 	nightAddr = DINO_IDLE_NIGHT_ADDR;
 }
->>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
 
 void Dino::updateJump(){
 	y -= JUMP_INTERVAL;
@@ -135,20 +109,23 @@ void Dino::falling(){
 }
 
 void Dino::updateDuck(){
+	width = DINO_DUCK_1_WIDTH;
+	height = DINO_DUCK_1_HEIGHT;
+
+	y = 512-DINO_DUCK_1_HEIGHT+15;
+
+	if(dayAddr == DINO_DUCK_1_ADDR){
+		dayAddr = DINO_DUCK_2_ADDR;
+		nightAddr = DINO_DUCK_2_NIGHT_ADDR;
+	}
+	else{
+		dayAddr = DINO_DUCK_1_ADDR;
+		nightAddr = DINO_DUCK_1_NIGHT_ADDR;
+	}
 
 }
 
 void Dino::idle(){
-<<<<<<< HEAD
-	addr = addr_idle;
-}
-
-void Dino::animateRun(){
-	if(addr == addr_run_one){
-		addr = addr_run_two;
-	} else {
-		addr = addr_run_one;
-=======
 	width = DINO_IDLE_WIDTH;
 	height = DINO_IDLE_HEIGHT;
 
@@ -162,28 +139,28 @@ void Dino::animateRun(){
 
 	if(dayAddr == DINO_RUN_1_ADDR){
 		dayAddr = DINO_RUN_2_ADDR;
-		nightAddr = DINO_RUN_2_ADDR;
+		nightAddr = DINO_RUN_2_NIGHT_ADDR;
 
 	} else {
 		dayAddr = DINO_RUN_1_ADDR;
-	    nightAddr = DINO_RUN_1_ADDR;
->>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
+	    nightAddr = DINO_RUN_1_NIGHT_ADDR;
 	}
 
 }
 
-bool Dino::detectCollision(){
-	// for now generate a random number to determine if collision
-<<<<<<< HEAD
-	int randVal = 100;//rand() % 500;
-=======
-	int randVal = rand() % 700;
->>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
-	if(randVal == 10){
-		return(true);
-	} else {
-		return(false);
+void Dino::showDead(){
+	width = DINO_IDLE_WIDTH;
+	height = DINO_IDLE_HEIGHT;
+
+	dayAddr = DINO_HIT_ADDR;
+	nightAddr = DINO_HIT_NIGHT_ADDR;
+}
+
+bool Dino::detectCollision(int obstacleX, int obstacleY){
+	if((obstacleX == HORIZONTAL_RUN_COLLISION) && (y == DINO_BASE_HEIGHT)){
+		return true;
 	}
+	return false;
 }
 
 ///////////////////////////////////////////////
@@ -191,18 +168,6 @@ bool Dino::detectCollision(){
 Obstacle::Obstacle(){
 }
 
-<<<<<<< HEAD
-Obstacle::Obstacle(int w, int h, int address){
-	width = w;
-    height = h;
-    addr = address;
-}
-
-
-
-bool Obstacle::isOffScreen(){
-	if(x < 0){
-=======
 Obstacle::Obstacle(int w, int h, int dayAddress, int nightAddress){
 	width = w;
     height = h;
@@ -214,13 +179,9 @@ Obstacle::Obstacle(int w, int h, int dayAddress, int nightAddress){
 
 bool Obstacle::isOffScreen(){
 	if(x < -100){
->>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
 		return(true);
 	} else {
 		return(false);
 	}
 }
-<<<<<<< HEAD
-=======
 
->>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d

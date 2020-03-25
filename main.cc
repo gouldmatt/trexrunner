@@ -49,6 +49,7 @@ void ButtonInterruptHandler(void *InstancePtr){
 		trexRunner.bStartGame = true;
 		xil_printf("Start game!");
 	}
+
 	(void) XGpio_InterruptClear(&input, XGPIO_IR_CH1_MASK);
 	XGpio_InterruptEnable(&input, XGPIO_IR_CH1_MASK);
 
@@ -133,13 +134,11 @@ int main(){
 
     std::vector<int> highScores(5,0);
 
-    while(1){
-    	trexRunner.GameplayInit();
 	trexRunner.GameplayInit();
 
     while(1){
     	if(trexRunner.bStartGame == true){
-    		score = trexRunner.gameplay(highScores[0]);
+    		score = trexRunner.gameplay(highScores[0], &input);
     		trexRunner.bStartGame = false;
     		//game ends, put score into high score vector
     		highScores.push_back(score);
@@ -148,15 +147,6 @@ int main(){
     		highScores.pop_back();
 
     		//display high scores
-<<<<<<< HEAD
-    		trexRunner.displaySprite(0,0,SCREEN_WIDTH,100,BLANK_SCR_ADDR);
-    		trexRunner.displaySprite(890,0,HIGH_SCORE_WIDTH,HIGH_SCORE_HEIGHT,HIGH_SCORE_ADDR);
-    		trexRunner.displayScore(950,0,highScores[0]);
-    		trexRunner.displayScore(1100,0,score);
-
-    		for(int i = 0; i < 5; i++){
-    		   trexRunner.displayScore(575,240+50*i,highScores[i]);
-=======
     		trexRunner.displaySprite(0,0,SCREEN_WIDTH,100,BLANK_ADDR);
     		trexRunner.displaySprite(890,0,HIGH_SCORE_WIDTH,HIGH_SCORE_HEIGHT,HIGH_SCORE_ADDR);
     		trexRunner.displayScore(950,0,highScores[0],false);
@@ -164,20 +154,13 @@ int main(){
 
     		for(int i = 0; i < 5; i++){
     		   trexRunner.displayScore(575,140+50*i,highScores[i],false);
->>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
     		}
 
     		//Option to restart
 
-<<<<<<< HEAD
-    		trexRunner.displaySprite(592,500,RESTART_WIDTH,RESTART_HEIGHT,RESTART_ADDR);
-
-    		trexRunner.displaySprite(448,180,GAME_OVER_WIDTH,GAME_OVER_HEIGHT,GAME_OVER_ADDR);
-=======
     		trexRunner.displaySprite(592,400,RESTART_WIDTH,RESTART_HEIGHT,RESTART_ADDR);
 
     		trexRunner.displaySprite(448,80,GAME_OVER_WIDTH,GAME_OVER_HEIGHT,GAME_OVER_ADDR);
->>>>>>> 018ded042ad1fc48de78f71f8e81d6540c3fbc8d
     		trexRunner.switchBuffer();
 
     		// display high scores
