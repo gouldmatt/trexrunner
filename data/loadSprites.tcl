@@ -1,32 +1,85 @@
-# blank screen 
-dow -data blank.data 0x18d2008
+# day 
+dow -data blank.data 0x018D2008
+dow -data zero.data 0x01DD2008
+dow -data one.data 0x01DD2B08
+dow -data two.data 0x01DD3608
+dow -data three.data 0x01DD4108
+dow -data four.data 0x01DD4C08
+dow -data five.data 0x01DD5708
+dow -data six.data 0x01DD6208
+dow -data seven.data 0x01DD6D08
+dow -data eight.data 0x01DD7808
+dow -data nine.data 0x01DD8308
+dow -data dino_idle.data 0x01DD8E08
+dow -data dino_hit.data 0x01DE2408
+dow -data dino_run_1.data 0x01DEBA08
+dow -data dino_run_2.data 0x01DF5008
+dow -data dino_duck_1.data 0x01DFE608
+dow -data dino_duck_2.data 0x01E05E08
+dow -data small_cactus_1.data 0x01E0D608
+dow -data small_cactus_2.data 0x01E11C08
+dow -data small_cactus_3.data 0x01E16208
+dow -data small_cactus_4.data 0x01E1A808
+dow -data small_cactus_5.data 0x01E1EE08
+dow -data small_cactus_6.data 0x01E23408
+dow -data large_cactus_1.data 0x01E27A08
+dow -data large_cactus_2.data 0x01E2DE08
+dow -data large_cactus_3.data 0x01E34208
+dow -data large_cactus_4.data 0x01E3A608
+dow -data cactus_group.data 0x01E40A08
+dow -data pterodactyl_1.data 0x01E4D208
+dow -data pterodactyl_2.data 0x01E54288
+dow -data cloud.data 0x01E5B308
+dow -data restart.data 0x01E5DD08
+dow -data game_over.data 0x01E64188
+dow -data high_score.data 0x01E6DD88
+dow -data ground.data 0x01E6F788
+dow -data brachiosaurus.data 0x01EB1188
 
-# load number sprites 
-dow -data 0.data 0x020BB00C
-dow -data 1.data 0x020BBB0C
-dow -data 2.data 0x020BC60C
-dow -data 3.data 0x020BD10C
-dow -data 4.data 0x020BDC0C
-dow -data 5.data 0x020BE70C
-dow -data 6.data 0x020BF20C
-dow -data 7.data 0x020BFD0C
-dow -data 8.data 0x020C080C
-dow -data 9.data 0x020C130C
-
-# cacti 
-dow -data largeCactus-1.data 0x020C7B0C
-
-# dino 
-dow -data dinoIdle.data 0x020D110C
-dow -data dinoRun-1.data 0x020DA70C
-dow -data dinoRun-2.data 0x020E3D0C
-
-# other 
-dow -data gameOver.data 0x020ED30C
-dow -data ground.data 0x020F6F0C
-dow -data highScore.data 0x0213890C
-dow -data restart.data 0x0213A30C
-
-
-
-
+# night
+dow -data blank_night.data 0x01EF2B88
+dow -data zero_night.data 0x023F2B88
+dow -data one_night.data 0x023F3688
+dow -data two_night.data 0x023F4188
+dow -data three_night.data 0x023F4C88
+dow -data four_night.data 0x023F5788
+dow -data five_night.data 0x023F6288
+dow -data six_night.data 0x023F6D88
+dow -data seven_night.data 0x023F7888
+dow -data eight_night.data 0x023F8388
+dow -data nine_night.data 0x023F8E88
+dow -data dino_idle_night.data 0x023F9988
+dow -data dino_hit_night.data 0x02402F88
+dow -data dino_run_1_night.data 0x0240C588
+dow -data dino_run_2_night.data 0x02415B88
+dow -data dino_duck_1_night.data 0x0241F188
+dow -data dino_duck_2_night.data 0x02426988
+dow -data small_cactus_1_night.data 0x0242E188
+dow -data small_cactus_2_night.data 0x02432788
+dow -data small_cactus_3_night.data 0x02436D88
+dow -data small_cactus_4_night.data 0x0243B388
+dow -data small_cactus_5_night.data 0x0243F988
+dow -data small_cactus_6_night.data 0x02443F88
+dow -data large_cactus_1_night.data 0x02448588
+dow -data large_cactus_2_night.data 0x0244E988
+dow -data large_cactus_3_night.data 0x02454D88
+dow -data large_cactus_4_night.data 0x0245B188
+dow -data cactus_group_night.data 0x02461588
+dow -data pterodactyl_1_night.data 0x0246DD88
+dow -data pterodactyl_2_night.data 0x02474E08
+dow -data cloud_night.data 0x0247BE88
+dow -data restart_night.data 0x0247E888
+dow -data game_over_night.data 0x02484D08
+dow -data high_score_night.data 0x0248E908
+dow -data ground_night.data 0x02490308
+dow -data moon_1.data 0x024D1D08
+dow -data moon_2.data 0x024D6D08
+dow -data moon_3.data 0x024DBD08
+dow -data moon_4.data 0x024E0D08
+dow -data moon_5.data 0x024E8508
+dow -data moon_6.data 0x024ED508
+dow -data moon_7.data 0x024F2508
+dow -data star_1.data 0x024F7508
+dow -data star_2.data 0x024F7D88
+dow -data star_3.data 0x024F8608
+dow -data brachiosaurus_night.data 0x024F8E88

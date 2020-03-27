@@ -39,30 +39,32 @@ class Sprite {
     public:
 		Sprite();
 
-        Sprite(int w, int h, int address);
+        Sprite(int w, int h, int dayAddress, int nightAddress);
 
         void display();
+
+        bool isOffScreen();
 
         int x; 
 
         int y; 
 
-        int addr; 
+        int dayAddr;
+
+        int nightAddr;
 
         int width; 
 
-        int height; 
+        int height;
 
-        bool isNightMode; 
+        bool isNight;
 };
 
 class Dino : public Sprite {
     public:
         Dino();
 
-        Dino(int w, int h, int address_idle, int address_run_one, int address_run_two);
-
-        bool detectCollision();
+        bool detectCollision(int obstacleX, int obstacleY);
 
         void idle();
 
@@ -70,22 +72,44 @@ class Dino : public Sprite {
 
         void updateJump();
 
-        bool isJumping; 
+        void updateDuck();
 
-        int addr_idle;
+        void falling();
+
+        void showDead();
+
+        bool isJumping;
+
+        bool isFalling;
+
+        bool isJumpIdle;
+
+        bool isDead;
 
         int addr_run_one;
 
         int addr_run_two;
+
 };
 
 class Obstacle : public Sprite {
     public:
+		int distanceX;
         Obstacle();
 
-        Obstacle(int w, int h, int address);
+        Obstacle(int w, int h, int dayAddress, int nightAddress);
 
-        bool isOffScreen();
+        Obstacle(int w, int h, int dayAddress, int dayAddressTwo, int nightAddress, int nightAddressTwo);
+
+        int frameOneDay = 0;
+
+        int frameOneNight = 0;
+
+        int frameTwoDay = 0;
+
+        int frameTwoNight = 0;
+
+        void animate();
 };
 
 #endif //SPRITE_H
