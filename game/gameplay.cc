@@ -162,7 +162,7 @@ void GamePlay::GameplayInit(){
 }
 
 int GamePlay::gameplay(int highScore, XGpio* input_){
-	std::vector<Obstacle> background;
+	std::vector<Sprite> background;
 	std::vector<Obstacle> obstacles;
 
 	// increasing amount to update sprites to create movement
@@ -374,7 +374,7 @@ int GamePlay::gameplay(int highScore, XGpio* input_){
 				dino.animateRun();
 			}
 
-
+		}
 
 
 		dino.display();
