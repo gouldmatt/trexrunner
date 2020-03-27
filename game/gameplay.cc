@@ -161,7 +161,7 @@ void GamePlay::GameplayInit(){
 }
 
 int GamePlay::gameplay(int highScore){
-	std::vector<Obstacle> background;
+	std::vector<Sprite> background;
 	std::vector<Obstacle> obstacles;
 
 	// increasing amount to update sprites to create movement
@@ -179,13 +179,12 @@ int GamePlay::gameplay(int highScore){
 	int nextStar = 0;
 	bool nightModeActive = false;
 	bool moonDisplayed = false;
+	bool replaceCactiWithBR = false;
 	//bool bJumpDone = false;
 	bool bJumpIdle = false;
 	int jump_height = (512-DINO_IDLE_HEIGHT+15) - 100;
 	int DINO_BASE_HEIGHT = 512-DINO_IDLE_HEIGHT+15;
 	int jump_count = 0;
-
-	 Obstacle cloud(CLOUD_WIDTH,CLOUD_HEIGHT,CLOUD_ADDR,CLOUD_NIGHT_ADDR);
 
 	// possible cacti obstacle vector
 	vector<Obstacle>  allCacti{
@@ -205,25 +204,27 @@ int GamePlay::gameplay(int highScore){
 		Obstacle(CACTUS_GROUP_WIDTH,CACTUS_GROUP_HEIGHT,CACTUS_GROUP_ADDR,CACTUS_GROUP_NIGHT_ADDR)
 	};
 
+	Obstacle br(BR_HEIGHT,BR_WIDTH,BR_ADDR,BR_NIGHT_ADDR);
+
 	// possible moon background sprite vector
 	vector<Sprite>  moonPhases{
-		Obstacle(MOON_1_WIDTH,MOON_1_HEIGHT,MOON_1_ADDR,MOON_1_ADDR),
-		Obstacle(MOON_2_WIDTH,MOON_2_HEIGHT,MOON_2_ADDR,MOON_2_ADDR),
-		Obstacle(MOON_3_WIDTH,MOON_3_HEIGHT,MOON_3_ADDR,MOON_3_ADDR),
-		Obstacle(MOON_4_WIDTH,MOON_4_HEIGHT,MOON_4_ADDR,MOON_4_ADDR),
-		Obstacle(MOON_5_WIDTH,MOON_5_HEIGHT,MOON_5_ADDR,MOON_5_ADDR),
-		Obstacle(MOON_6_WIDTH,MOON_6_HEIGHT,MOON_6_ADDR,MOON_6_ADDR),
-		Obstacle(MOON_7_WIDTH,MOON_7_HEIGHT,MOON_7_ADDR,MOON_7_ADDR)
+		Sprite(MOON_1_WIDTH,MOON_1_HEIGHT,MOON_1_ADDR,MOON_1_ADDR),
+		Sprite(MOON_2_WIDTH,MOON_2_HEIGHT,MOON_2_ADDR,MOON_2_ADDR),
+		Sprite(MOON_3_WIDTH,MOON_3_HEIGHT,MOON_3_ADDR,MOON_3_ADDR),
+		Sprite(MOON_4_WIDTH,MOON_4_HEIGHT,MOON_4_ADDR,MOON_4_ADDR),
+		Sprite(MOON_5_WIDTH,MOON_5_HEIGHT,MOON_5_ADDR,MOON_5_ADDR),
+		Sprite(MOON_6_WIDTH,MOON_6_HEIGHT,MOON_6_ADDR,MOON_6_ADDR),
+		Sprite(MOON_7_WIDTH,MOON_7_HEIGHT,MOON_7_ADDR,MOON_7_ADDR)
 	};
 
 	// possible star background sprite vector
-	vector<Obstacle>  allStars{
-		Obstacle(STAR_1_WIDTH,STAR_1_HEIGHT,STAR_1_ADDR,STAR_1_ADDR),
-		Obstacle(STAR_2_WIDTH,STAR_2_HEIGHT,STAR_2_ADDR,STAR_2_ADDR),
-		Obstacle(STAR_3_WIDTH,STAR_3_HEIGHT,STAR_3_ADDR,STAR_3_ADDR),
+	vector<Sprite>  allStars{
+		Sprite(STAR_1_WIDTH,STAR_1_HEIGHT,STAR_1_ADDR,STAR_1_ADDR),
+		Sprite(STAR_2_WIDTH,STAR_2_HEIGHT,STAR_2_ADDR,STAR_2_ADDR),
+		Sprite(STAR_3_WIDTH,STAR_3_HEIGHT,STAR_3_ADDR,STAR_3_ADDR),
 	};
 
-
+	Sprite cloud(CLOUD_WIDTH,CLOUD_HEIGHT,CLOUD_ADDR,CLOUD_NIGHT_ADDR);
 
 	Sprite clearScreen(SCREEN_WIDTH,SCREEN_HEIGHT,BLANK_ADDR,BLANK_NIGHT_ADDR);
 	clearScreen.x = 0;
@@ -413,25 +414,37 @@ int GamePlay::gameplay(int highScore){
 			}
 		}
 
+		if(distance % BR_INTERVAL == 0) {
+			replaceCactiWithBR = true;
+		}
+
 
 		// generate new cacti
 		if(distance % nextCactiDistance == 0) {
 			nextCactiDistance = distance+CACTI_INTERVAL+(LFSR() % 20);
 
-			// choose a cacti from group of 11
-			nextCacti = (LFSR() % 11);
-
-			if(nextCacti <= 6){
-				allCacti[nextCacti].x = 1290;
-				allCacti[nextCacti].y = 512-SMALL_CACTUS_1_HEIGHT+23;
-				allCacti[nextCacti].display();
+			if(replaceCactiWithBR){
+			    replaceCactiWithBR = false;
+			    br.x = 1290;
+			    br.y = 512-BR_HEIGHT+48;
+			    br.display();
+				obstacles.push_back(br);
 			} else {
-				allCacti[nextCacti].x = 1290;
-				allCacti[nextCacti].y = 512-LARGE_CACTUS_1_HEIGHT+23;
-				allCacti[nextCacti].display();
+				// choose a cacti from group of 11
+				nextCacti = (LFSR() % 11);
+
+				if(nextCacti <= 6){
+					allCacti[nextCacti].x = 1290;
+					allCacti[nextCacti].y = 512-SMALL_CACTUS_1_HEIGHT+23;
+					allCacti[nextCacti].display();
+				} else {
+					allCacti[nextCacti].x = 1290;
+					allCacti[nextCacti].y = 512-LARGE_CACTUS_1_HEIGHT+23;
+					allCacti[nextCacti].display();
+				}
+				 // push new cacti on to vector
+				 obstacles.push_back(allCacti[nextCacti]);
 			}
-			 // push new cacti on to vector
-			 obstacles.push_back(allCacti[nextCacti]);
 		}
 
 		// generate new pterodactyl

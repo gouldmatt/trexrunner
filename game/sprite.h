@@ -43,6 +43,8 @@ class Sprite {
 
         void display();
 
+        bool isOffScreen();
+
         int x; 
 
         int y; 
@@ -98,8 +100,6 @@ class Obstacle : public Sprite {
         int frameTwoNight = 0;
 
         void animate();
-
-        bool isOffScreen();
 };
 
 #endif //SPRITE_H

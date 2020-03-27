@@ -84,6 +84,14 @@ void Sprite::display(){
 	*(slaveaddrPtr+0) = 0x00000000;
 }
 
+bool Sprite::isOffScreen(){
+	if(x < -100){
+		return(true);
+	} else {
+		return(false);
+	}
+}
+
 ///////////////////////////////////////////////
 // dino class 
 Dino::Dino(){
@@ -185,14 +193,6 @@ void Obstacle::animate(){
 			nightAddr = frameOneNight;
 		}
 
-	}
-}
-
-bool Obstacle::isOffScreen(){
-	if(x < -100){
-		return(true);
-	} else {
-		return(false);
 	}
 }
 
