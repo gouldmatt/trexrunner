@@ -49,6 +49,7 @@ void ButtonInterruptHandler(void *InstancePtr){
 		trexRunner.bStartGame = true;
 		xil_printf("Start game!");
 	}
+
 	(void) XGpio_InterruptClear(&input, XGPIO_IR_CH1_MASK);
 	XGpio_InterruptEnable(&input, XGPIO_IR_CH1_MASK);
 
@@ -137,7 +138,7 @@ int main(){
 
     while(1){
     	if(trexRunner.bStartGame == true){
-    		score = trexRunner.gameplay(highScores[0]);
+    		score = trexRunner.gameplay(highScores[0], &input);
     		trexRunner.bStartGame = false;
     		//game ends, put score into high score vector
     		highScores.push_back(score);

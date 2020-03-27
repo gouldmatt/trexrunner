@@ -14,6 +14,7 @@ GamePlay::GamePlay(){
 	bJumpState = false;
 	bStartGame = false;
 	bDuckState = false;
+    bGameOver = false;;
 }
 
 int GamePlay::LFSR(){
@@ -160,8 +161,8 @@ void GamePlay::GameplayInit(){
 
 }
 
-int GamePlay::gameplay(int highScore){
-	std::vector<Sprite> background;
+int GamePlay::gameplay(int highScore, XGpio* input_){
+	std::vector<Obstacle> background;
 	std::vector<Obstacle> obstacles;
 
 	// increasing amount to update sprites to create movement
@@ -249,6 +250,8 @@ int GamePlay::gameplay(int highScore){
     groundB.x = GROUND_WIDTH;
     groundB.y = 512;
 
+    int buttonData = 0;
+
 	XGpio input;
 	XGpio_Initialize(&input, XPAR_AXI_GPIO_0_DEVICE_ID);
 	XGpio_SetDataDirection(&input, 1, 0xF);
@@ -296,17 +299,35 @@ int GamePlay::gameplay(int highScore){
 
 		// update obstacle positions
 		for(int i = 0; i < int(obstacles.size()); i++){
+
 			obstacles[i].x-=speedUpdatePixels;
 			obstacles[i].isNight = nightModeActive;
 			if(distance % PT_ANIMATION_INTERVAL == 0){
 				obstacles[i].animate();
 			}
 			obstacles[i].display();
+
+			int obsX = obstacles[i].x;
+			int obsY = obstacles[i].y;
+			if(dino.detectCollision(obsX, obsY)){
+				bGameOver = true;
+				break;
+			}
+
 		}
 
 		// animate dino and move dino
-
-			if(bJumpState == true || (dino.isJumping == true)){
+		if(distance % SCORE_INC_INTERVAL == 0){
+			if(bGameOver == true){
+				dino.isDead = true;
+				dino.showDead();
+				if(dino.isDead == true){
+					bGameOver = false;
+					dino.isDead = false;
+					break;
+				}
+			}
+			else if(bJumpState == true || (dino.isJumping == true)){
 				//jump state
 				dino.idle();
 				dino.updateJump();
@@ -323,7 +344,12 @@ int GamePlay::gameplay(int highScore){
 
 			}
 			else if(bDuckState == true){
-
+				//duck_state
+				dino.updateDuck();
+				buttonData = readButtons(input);
+				if(buttonData == BUTTON_NONE){
+					bDuckState = false;
+				}
 			}
 			else if((dino.isJumpIdle == true)){
 				//idle state at jump
@@ -344,9 +370,8 @@ int GamePlay::gameplay(int highScore){
 				}
 			}
 			else{
-				if(distance % SCORE_INC_INTERVAL == 0){
-					dino.animateRun();
-				}
+				dino.y = 512-DINO_IDLE_HEIGHT+15;
+				dino.animateRun();
 			}
 
 
@@ -354,12 +379,12 @@ int GamePlay::gameplay(int highScore){
 
 		dino.display();
 
-		// check if obstacle hit
-		if(dino.detectCollision()){
-			 printf("Obstacle Hit!\n");
-			 dino.idle();
-			 break;
-		}
+//		// check if obstacle hit
+//		if(dino.detectCollision()){
+//			 printf("Obstacle Hit!\n");
+//			 dino.idle();
+//			 break;
+//		}
 
 		// remove background elements if off the screen
 		if(background[0].isOffScreen() && background.size() >= 1){
@@ -452,6 +477,7 @@ int GamePlay::gameplay(int highScore){
 			nextPterodactylDistance = distance+PT_INTERVAL+(LFSR() % 20);
 
 			 Obstacle pt(PTERODACTYL_1_WIDTH,PTERODACTYL_1_HEIGHT,PTERODACTYL_1_ADDR,PTERODACTYL_2_ADDR,PTERODACTYL_1_NIGHT_ADDR,PTERODACTYL_2_NIGHT_ADDR);
+
 
 			 pt.x = 1290;
 			 pt.y = 200 + (LFSR() % (400 - 200 + 1 ));

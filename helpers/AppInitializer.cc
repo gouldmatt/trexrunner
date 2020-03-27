@@ -34,9 +34,8 @@ int readButtons(XGpio input){
 	int button_data = 0;
 	int last = 0;
 	int count = 0;
-
-	button_data = XGpio_DiscreteRead(&input, 1); //get button data
-	while(count < 90000){
+  
+	while(count < 150000){
 		button_data = XGpio_DiscreteRead(&input, 1); //get button data
 		if(last == button_data){
 			count ++;

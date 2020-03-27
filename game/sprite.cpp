@@ -99,6 +99,7 @@ Dino::Dino(){
 	isFalling = false;
 	isJumpIdle = false;
 	isNight = false;
+	isDead = false;
 
 	width = DINO_IDLE_WIDTH;
 	height = DINO_IDLE_HEIGHT;
@@ -117,6 +118,19 @@ void Dino::falling(){
 }
 
 void Dino::updateDuck(){
+	width = DINO_DUCK_1_WIDTH;
+	height = DINO_DUCK_1_HEIGHT;
+
+	y = 512-DINO_DUCK_1_HEIGHT+15;
+
+	if(dayAddr == DINO_DUCK_1_ADDR){
+		dayAddr = DINO_DUCK_2_ADDR;
+		nightAddr = DINO_DUCK_2_NIGHT_ADDR;
+	}
+	else{
+		dayAddr = DINO_DUCK_1_ADDR;
+		nightAddr = DINO_DUCK_1_NIGHT_ADDR;
+	}
 
 }
 
@@ -134,23 +148,28 @@ void Dino::animateRun(){
 
 	if(dayAddr == DINO_RUN_1_ADDR){
 		dayAddr = DINO_RUN_2_ADDR;
-		nightAddr = DINO_RUN_2_ADDR;
+		nightAddr = DINO_RUN_2_NIGHT_ADDR;
 
 	} else {
 		dayAddr = DINO_RUN_1_ADDR;
-	    nightAddr = DINO_RUN_1_ADDR;
+	    nightAddr = DINO_RUN_1_NIGHT_ADDR;
 	}
 
 }
 
-bool Dino::detectCollision(){
-	// for now generate a random number to determine if collision
-	int randVal = rand() ;//% 700;
-	if(randVal == 10){
-		return(true);
-	} else {
-		return(false);
+void Dino::showDead(){
+	width = DINO_IDLE_WIDTH;
+	height = DINO_IDLE_HEIGHT;
+
+	dayAddr = DINO_HIT_ADDR;
+	nightAddr = DINO_HIT_NIGHT_ADDR;
+}
+
+bool Dino::detectCollision(int obstacleX, int obstacleY){
+	if((obstacleX == HORIZONTAL_RUN_COLLISION) && (y == DINO_BASE_HEIGHT)){
+		return true;
 	}
+	return false;
 }
 
 ///////////////////////////////////////////////

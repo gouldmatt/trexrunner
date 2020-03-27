@@ -64,7 +64,7 @@ class Dino : public Sprite {
     public:
         Dino();
 
-        bool detectCollision();
+        bool detectCollision(int obstacleX, int obstacleY);
 
         void idle();
 
@@ -76,15 +76,25 @@ class Dino : public Sprite {
 
         void falling();
 
+        void showDead();
+
         bool isJumping;
 
         bool isFalling;
 
         bool isJumpIdle;
+
+        bool isDead;
+
+        int addr_run_one;
+
+        int addr_run_two;
+
 };
 
 class Obstacle : public Sprite {
     public:
+		int distanceX;
         Obstacle();
 
         Obstacle(int w, int h, int dayAddress, int nightAddress);

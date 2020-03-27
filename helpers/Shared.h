@@ -16,8 +16,9 @@ const int SPEED_INTERVAL = 100;
 const int SCORE_INC_INTERVAL = 3;
 
 const int BASE_HEIGHT = 512;
-const int JUMP_INTERVAL = 60;//50;
-const int IDLE_COUNT = 3;
+
+const int JUMP_INTERVAL = 50;
+const int IDLE_COUNT = 2;
 
 const int BR_INTERVAL = 600; // interval at which one cactus is replaced with brachiosaurus sprite
 const int CACTI_INTERVAL = 70;
@@ -236,5 +237,7 @@ const int STAR_1_HEIGHT = 17;
 const int STAR_2_HEIGHT = 17;
 const int STAR_3_HEIGHT = 17;
 
+const int DINO_BASE_HEIGHT =  512-DINO_IDLE_HEIGHT+15;
+const int HORIZONTAL_RUN_COLLISION = 100 + DINO_IDLE_WIDTH; //collision for x-axis
 
 #endif /* SRC_HELPERS_SHARED_H_ */
