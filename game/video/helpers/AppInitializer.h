@@ -2,7 +2,8 @@
  * AppInitializer.h
  *
  *  Created on: Mar 3, 2020
- *      Author: ecrisost
+ *      Author: Elaine Crisostomo
+ *		Initializes any functions used throughout the game
  */
 
 #ifndef SRC_APPINITIALIZER_H_
@@ -21,9 +22,7 @@ const int BUTTON_DOWN = 0b00010;
 
 
 
-
-void FlushCache();
-int readButtons(XGpio input);
-
+int readButtons(XGpio input); //reads button values
+void clearRegisters(); //clears communication registers
 
 #endif /* SRC_APPINITIALIZER_H_ */
