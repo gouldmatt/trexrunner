@@ -1,3 +1,8 @@
+/*
+ * Created by: Matthew Gould
+ *
+ */
+
 #include "xil_printf.h"
 #include "xbasic_types.h"
 #include "xparameters.h"
@@ -33,10 +38,12 @@ using namespace std;
 
 ///////////////////////////////////////////////
 // sprite class 
+
 Sprite::Sprite(){
 
 }
 
+// intialize the width,height of the sprite and location of the day/night sprite 
 Sprite::Sprite(int w, int h, int dayAddress, int nightAddress){
 	width = w;
 	height = h;
@@ -45,6 +52,7 @@ Sprite::Sprite(int w, int h, int dayAddress, int nightAddress){
 	isNight = false;
 }
 
+// interface with the GPU to display the sprite object, using day/night address based on isNight 
 void Sprite::display(){
 	int currAddr = 0;
 
@@ -72,20 +80,19 @@ void Sprite::display(){
 	// width
 	*(slaveaddrPtr+7) = width;
 
-
+	// start 
 	*(slaveaddrPtr+0) = 0x00000001;
 	*(slaveaddrPtr+0) = 0x00000000;
 
+	// wait for gpu to finish 
 	int done =  *(slaveaddrPtr+1);
-		while(done != 1){
+	while(done != 1){
 		done =  *(slaveaddrPtr+1);
 	}
-
-	*(slaveaddrPtr+0) = 0x00000000;
 }
 
 bool Sprite::isOffScreen(){
-	if(x < -100){
+	if(x < -100){ 
 		return(true);
 	} else {
 		return(false);
@@ -165,18 +172,49 @@ void Dino::showDead(){
 	nightAddr = DINO_HIT_NIGHT_ADDR;
 }
 
-bool Dino::detectCollision(int obstacleX, int obstacleY){
-	if((obstacleX == HORIZONTAL_RUN_COLLISION) && (y == DINO_BASE_HEIGHT)){
-		return true;
+// detect if the dino has collided with an obstacle 
+bool Dino::detectCollision(int obstacleX, int obstacleY, int obstacleHeight, int speed, bool ptr){
+	//applies to on the ground
+	if(ptr == false){
+		if((obstacleX <= HORIZONTAL_RUN_COLLISION) && (obstacleX > 100) && (obstacleY >= TALLEST_SPRITE)){
+			if((y == DINO_BASE_HEIGHT) && (obstacleX <= (HORIZONTAL_RUN_COLLISION-speed))){
+				return true;
+			}
+			else if (y <= obstacleHeight && y > DINO_BASE_HEIGHT){
+				return true;
+			}
+
+			return false;
+		}
 	}
+	else{
+		//applies to the pterodactyl
+		if(y == DINO_BASE_HEIGHT){
+
+		}
+		else{
+			if((obstacleX <= HORIZONTAL_RUN_COLLISION) && (obstacleX > 100)){
+				if(obstacleX <= HORIZONTAL_RUN_COLLISION - speed){
+					return true;
+				}
+			}
+			return false;
+		}
+		return false;
+	}
+
+
+
 	return false;
 }
 
 ///////////////////////////////////////////////
 // obstacle class 
 Obstacle::Obstacle(){
+
 }
 
+// constructor for obstacle without animation  
 Obstacle::Obstacle(int w, int h, int dayAddress, int nightAddress){
 	width = w;
     height = h;
@@ -189,6 +227,7 @@ Obstacle::Obstacle(int w, int h, int dayAddress, int nightAddress){
 	frameTwoNight = 0;
 }
 
+// constructor for obstacle with animation  
 Obstacle::Obstacle(int w, int h, int dayAddress, int dayAddressTwo, int nightAddress, int nightAddressTwo){
 	width = w;
 	height = h;
@@ -201,7 +240,7 @@ Obstacle::Obstacle(int w, int h, int dayAddress, int dayAddressTwo, int nightAdd
 	frameTwoNight = nightAddressTwo;
 }
 
-
+// switch the sprite to to its second address to animate if possible 
 void Obstacle::animate(){
 	if(frameOneDay != 0 && frameOneNight != 0){
 		if(dayAddr == frameOneDay){

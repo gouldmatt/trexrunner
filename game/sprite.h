@@ -1,4 +1,10 @@
-//header file for base class sprite and child classes Dino and Obstacle 
+/*
+ * Created by: Matthew Gould
+ *	Sprite class: contains position and size of the sprite
+ *	Child classes:
+ *		Dino - contains functions and variables necessary for the dino sprite
+ *		Obstacles - contains functions and variables necessary for the different obstacles
+ */
 #ifndef SPRITE_H
 #define SPRITE_H
 
@@ -35,28 +41,35 @@ static volatile Xuint32 *slaveaddrPtr = (Xuint32 *) XPAR_GPU_0_S00_AXI_BASEADDR;
 
 using namespace std;
 
+// base class for all game sprites 
 class Sprite {
     public:
 		Sprite();
 
+        // intialize the width,height of the sprite and location of the day/night sprite 
         Sprite(int w, int h, int dayAddress, int nightAddress);
 
+        // interface with the GPU to display the sprite object, using day/night address based on isNight 
         void display();
 
         bool isOffScreen();
 
+        // the coordinates to display the sprite at, with the top left of the screen being (0,0)
         int x; 
 
         int y; 
-
+    
+        // the address of the day and night sprite in memory 
         int dayAddr;
 
         int nightAddr;
 
+        // the sprite size in pixels 
         int width; 
 
         int height;
 
+        // is the night mode of the game currently activated 
         bool isNight;
 };
 
@@ -64,7 +77,8 @@ class Dino : public Sprite {
     public:
         Dino();
 
-        bool detectCollision(int obstacleX, int obstacleY);
+        // detect if the dino has collided with an obstacle 
+        bool detectCollision(int obstacleX, int obstacleY, int obstacleHeight, int speed, bool ptr);
 
         void idle();
 
@@ -94,13 +108,16 @@ class Dino : public Sprite {
 
 class Obstacle : public Sprite {
     public:
-		int distanceX;
+
         Obstacle();
 
+        // constructor for obstacle without animation  
         Obstacle(int w, int h, int dayAddress, int nightAddress);
 
+        // constructor for obstacle with animation  
         Obstacle(int w, int h, int dayAddress, int dayAddressTwo, int nightAddress, int nightAddressTwo);
 
+        // address members for the obstacle with animation if both frames have a value  
         int frameOneDay = 0;
 
         int frameOneNight = 0;
@@ -109,6 +126,7 @@ class Obstacle : public Sprite {
 
         int frameTwoNight = 0;
 
+        // switch the sprite to to its second address to animate if possible 
         void animate();
 };
 
