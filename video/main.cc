@@ -26,7 +26,9 @@ XScuGic InterruptController; /* Instance of the Interrupt Controller */
 static XScuGic_Config *GicConfig;/* The configuration parameters of the controller */
 GamePlay trexRunner;
 
-
+/*
+ * Button interrupt handler modified from: https://github.com/Micro-Studios/Xilinx-GPIO-Interrupt
+ */
 void ButtonInterruptHandler(void *InstancePtr){
 	//Disable GPIO Interrupts
 	XGpio_InterruptDisable(&input, XGPIO_IR_CH1_MASK);
@@ -39,6 +41,7 @@ void ButtonInterruptHandler(void *InstancePtr){
 
 	if(btn_value == BUTTON_UP){
 		trexRunner.bJumpState = true;
+		Xil_Out32(AUDIO_ACK_ADDR, JUMP);
 		xil_printf("JUMP!");
 	}
 	else if(btn_value == BUTTON_DOWN){
@@ -127,52 +130,63 @@ int InitializeButtons(){
  */
 
 int main(){
+	clearRegisters();
+	xil_printf("Starting Video\n\r");
+	xil_printf("Waiting for audio...\n\r");
+
+	u32 ack_ = Xil_In32(VIDEO_ACK_ADDR);
+
+	//wait for audio to finish
+	while(ack_ != ACK){
+		ack_ = Xil_In32(VIDEO_ACK_ADDR);
+	}
+
+
+	Xil_Out32(VIDEO_ACK_ADDR, IDLE);//set to idle as in been recieved
 
 	InitializeButtons(); //Initialize Buttons
-    int score = 0;
-    bool showStart = true;
+	int score = 0;
+	bool showStart = true;
 
-    std::vector<int> highScores(5,0);
+	std::vector<int> highScores(5,0);
 
 	trexRunner.GameplayInit();
+	Xil_Out32(AUDIO_ACK_ADDR, ACK);
 
     while(1){
-    	if(trexRunner.bStartGame == true){
-    		score = trexRunner.gameplay(highScores[0], &input);
-    		trexRunner.bStartGame = false;
-    		//game ends, put score into high score vector
-    		highScores.push_back(score);
-    		std::sort(highScores.begin(), highScores.end());
-    		std::reverse(highScores.begin(), highScores.end());
-    		highScores.pop_back();
+    	// wait for user to start gameplay
+    	while(trexRunner.bStartGame != true){}
+		Xil_Out32(AUDIO_ACK_ADDR, START);
+		score = trexRunner.gameplay(highScores[0], &input);
 
-    		//display high scores
-    		trexRunner.displaySprite(0,0,SCREEN_WIDTH,100,BLANK_ADDR);
-    		trexRunner.displaySprite(890,0,HIGH_SCORE_WIDTH,HIGH_SCORE_HEIGHT,HIGH_SCORE_ADDR);
-    		trexRunner.displayScore(950,0,highScores[0],false);
-    		trexRunner.displayScore(1100,0,score,false);
+		//game ends, put score into high score vector
+		highScores.push_back(score);
+		std::sort(highScores.begin(), highScores.end());
+		std::reverse(highScores.begin(), highScores.end());
+		highScores.pop_back();
 
-    		for(int i = 0; i < 5; i++){
-    		   trexRunner.displayScore(575,140+50*i,highScores[i],false);
-    		}
+		//Option to restart
+		trexRunner.displaySprite(592,400,RESTART_WIDTH,RESTART_HEIGHT,RESTART_ADDR);
+		trexRunner.displaySprite(448,300,GAME_OVER_WIDTH,GAME_OVER_HEIGHT,GAME_OVER_ADDR);
+		trexRunner.switchBuffer();
 
-    		//Option to restart
+		trexRunner.bStartGame = false;
 
-    		trexRunner.displaySprite(592,400,RESTART_WIDTH,RESTART_HEIGHT,RESTART_ADDR);
+		// wait for user to click button to return to title
+		while(trexRunner.bStartGame != true){}
+		trexRunner.bStartGame = false;
 
-    		trexRunner.displaySprite(448,80,GAME_OVER_WIDTH,GAME_OVER_HEIGHT,GAME_OVER_ADDR);
-    		trexRunner.switchBuffer();
+		// display high scores
+		printf("Display high scores screens: press button to play again\n");
+		trexRunner.displaySprite(0,0,SCREEN_WIDTH,SCREEN_HEIGHT,BLANK_ADDR);
 
-    		// display high scores
-    		printf("Display high scores screens: press button to play again\n");
+		trexRunner.displaySprite(448,500,HIGH_SCORES_WIDTH+100,200,BLANK_ADDR);
+		trexRunner.displaySprite(448,560,HIGH_SCORES_WIDTH,HIGH_SCORES_HEIGHT,HIGH_SCORES_ADDR);
+		for(int i = 0; i < 5; i++){
+		   trexRunner.displayScore(575,660+50*i,highScores[i],false);
+		}
 
-
-    	}
-    	else{
-    		printf("Press middle button to start!");
-    	}
-
-
+		trexRunner.GameplayInit();
     }
     return 0;
 }

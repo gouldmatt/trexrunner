@@ -2,7 +2,7 @@
  * gameplay.h
  *
  *  Created on: Mar 7, 2020
- *      Author: ecrisost
+ *      Author: Matthew Gould
  */
 
 #ifndef SRC_GAMEPLAY_H_

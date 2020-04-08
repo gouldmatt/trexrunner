@@ -1,3 +1,8 @@
+/*
+ * Created by: Matthew Gould
+ *
+ */
+
 #include "xil_printf.h"
 #include "xbasic_types.h"
 #include "xparameters.h"
@@ -165,16 +170,45 @@ void Dino::showDead(){
 	nightAddr = DINO_HIT_NIGHT_ADDR;
 }
 
-bool Dino::detectCollision(int obstacleX, int obstacleY){
-	if((obstacleX == HORIZONTAL_RUN_COLLISION) && (y == DINO_BASE_HEIGHT)){
-		return true;
+bool Dino::detectCollision(int obstacleX, int obstacleY, int obstacleHeight, int speed, bool ptr){
+	//applies to on the ground
+	if(ptr == false){
+		if((obstacleX <= HORIZONTAL_RUN_COLLISION) && (obstacleX > 100) && (obstacleY >= TALLEST_SPRITE)){
+			if((y == DINO_BASE_HEIGHT) && (obstacleX <= (HORIZONTAL_RUN_COLLISION-speed))){
+				return true;
+			}
+			else if (y <= obstacleHeight && y > DINO_BASE_HEIGHT){
+				return true;
+			}
+
+			return false;
+		}
 	}
+	else{
+		//applies to the pterodactyl
+		if(y == DINO_BASE_HEIGHT){
+
+		}
+		else{
+			if((obstacleX <= HORIZONTAL_RUN_COLLISION) && (obstacleX > 100)){
+				if(obstacleX <= HORIZONTAL_RUN_COLLISION - speed){
+					return true;
+				}
+			}
+			return false;
+		}
+		return false;
+	}
+
+
+
 	return false;
 }
 
 ///////////////////////////////////////////////
 // obstacle class 
 Obstacle::Obstacle(){
+
 }
 
 Obstacle::Obstacle(int w, int h, int dayAddress, int nightAddress){

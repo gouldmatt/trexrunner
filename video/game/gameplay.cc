@@ -2,14 +2,16 @@
  * gameplay.cc
  *
  *  Created on: Mar 7, 2020
- *      Author: ecrisost
+ *      Author: Matthew Gould
  */
 
 #include "gameplay.h"
 #include "sprite.h"
 #include "../helpers/AppInitializer.h"
 
-
+/*
+ * Default constructor containing all the states
+ */
 GamePlay::GamePlay(){
 	bJumpState = false;
 	bStartGame = false;
@@ -17,8 +19,15 @@ GamePlay::GamePlay(){
     bGameOver = false;;
 }
 
+
+/*
+ * Generates random number in memory
+ * Returns random number
+ */
 int GamePlay::LFSR(){
-	return rand();
+
+	int randNumber = (Xil_In32(XPAR_LFSR_0_S00_AXI_BASEADDR)); //get random number
+	return randNumber;
 }
 
 void GamePlay::displaySprite(int x, int y, int width, int height, int addr){
@@ -57,8 +66,6 @@ void GamePlay::switchBuffer(){
 	// switch buffer
 	*(slaveaddr_p+8) = 0x00000001;
 
-	//*(slaveaddr_p+8) = 0x00000000;
-
 	// switch buffer ack
 	int done =  *(slaveaddr_p+9);
 			while(done != 1){
@@ -68,6 +75,9 @@ void GamePlay::switchBuffer(){
 	*(slaveaddr_p+8) = 0x00000000;
 }
 
+/*
+ * Display scores on the upright corner
+ */
 void GamePlay::displayScore(int x, int y, int score, bool nightMode){
 	int scoreX = x;
 	int scoreY = y;
@@ -143,24 +153,37 @@ void GamePlay::displayScore(int x, int y, int score, bool nightMode){
 	}
 }
 
+
+/*
+ * Initializes video screen
+ */
 void GamePlay::GameplayInit(){
   		// white screen
-    	displaySprite(0,0,SCREEN_WIDTH,SCREEN_HEIGHT,BLANK_ADDR);
-
       	displaySprite(0,512,GROUND_WIDTH,GROUND_HEIGHT,GROUND_ADDR);
 
+      	//dino sprite
       	displaySprite(100,512-DINO_IDLE_HEIGHT+15,DINO_IDLE_WIDTH,DINO_IDLE_HEIGHT,DINO_IDLE_ADDR);
+
+      	//trex runner title
+		displaySprite(160,100,TITLE_WIDTH,TITLE_HEIGHT,TITLE_ADDR);
+
+		//creators
+		displaySprite(192,200,CREDIT_WIDTH,CREDIT_HEIGHT,CREDIT_ADDR);
 
     	switchBuffer();
 
     	displaySprite(0,0,SCREEN_WIDTH,SCREEN_HEIGHT,BLANK_ADDR);
 
+    	//display ground
      	displaySprite(0,512,GROUND_WIDTH,GROUND_HEIGHT,GROUND_ADDR);
 
      	displaySprite(100,512-DINO_IDLE_HEIGHT+15,DINO_IDLE_WIDTH,DINO_IDLE_HEIGHT,DINO_IDLE_ADDR);
 
 }
 
+/*
+ * Main gameplay of TRex-runner.
+ */
 int GamePlay::gameplay(int highScore, XGpio* input_){
 	std::vector<Sprite> background;
 	std::vector<Obstacle> obstacles;
@@ -181,9 +204,9 @@ int GamePlay::gameplay(int highScore, XGpio* input_){
 	bool nightModeActive = false;
 	bool moonDisplayed = false;
 	bool replaceCactiWithBR = false;
-	//bool bJumpDone = false;
-	bool bJumpIdle = false;
-	int jump_height = (512-DINO_IDLE_HEIGHT+15) - 100;
+
+	bool bJumpIdle = false; //idle states for jump
+	int jump_height = (512-DINO_IDLE_HEIGHT+15) - 150;
 	int DINO_BASE_HEIGHT = 512-DINO_IDLE_HEIGHT+15;
 	int jump_count = 0;
 
@@ -252,15 +275,27 @@ int GamePlay::gameplay(int highScore, XGpio* input_){
 
     int buttonData = 0;
 
+    //initialize button input (this is for hold duck)
 	XGpio input;
 	XGpio_Initialize(&input, XPAR_AXI_GPIO_0_DEVICE_ID);
 	XGpio_SetDataDirection(&input, 1, 0xF);
+
+	//generate pterodactyl obstacle
+	Obstacle pt(PTERODACTYL_1_WIDTH,PTERODACTYL_1_HEIGHT,PTERODACTYL_1_ADDR,PTERODACTYL_2_ADDR,PTERODACTYL_1_NIGHT_ADDR,PTERODACTYL_2_NIGHT_ADDR);
+
+	bool bPterodactyl = false;
+
+	vector<Obstacle> ptObstacles;
 
 	while(score != END_SCORE){
 
 		distance++;
 		if(distance % SCORE_INC_INTERVAL == 0){
 			score++;
+			if(score % 100 == 0){
+				//reach score threshold, produce score sound
+				Xil_Out32(AUDIO_ACK_ADDR, POINT);
+			}
 		}
 
 		// clear buffer
@@ -291,87 +326,124 @@ int GamePlay::gameplay(int highScore, XGpio* input_){
 		for(int i = 0; i < int(background.size()); i++){
 
 			background[i].x-= int(0.75*speedUpdatePixels);
-
-			// isNight does not need to be updated for background
 			background[i].isNight = nightModeActive;
 			background[i].display();
 		}
 
+		//turn off pterodactyl when it reaches accross the screen
+		if(pt.x < 0){
+			bPterodactyl = false;
+		}
+
 		// update obstacle positions
-		for(int i = 0; i < int(obstacles.size()); i++){
+		if(bPterodactyl == false){
+			for(int i = 0; i < int(obstacles.size()); i++){
 
-			obstacles[i].x-=speedUpdatePixels;
-			obstacles[i].isNight = nightModeActive;
-			if(distance % PT_ANIMATION_INTERVAL == 0){
-				obstacles[i].animate();
+				obstacles[i].x-=speedUpdatePixels;
+				obstacles[i].isNight = nightModeActive;
+				obstacles[i].display();
+
 			}
-			obstacles[i].display();
+			if(obstacles.size() > 0){
+			//nearest cactus
+				xil_printf("distance %d \n\r", obstacles[0].x);
+				//parameters for collision detection
+				int obsX = obstacles[0].x;
+				int obsY = obstacles[0].y;
+				int height = obstacles[0].height;
+				if(dino.detectCollision(obsX, obsY, height, 40, false)){
+					//game over
+					bGameOver = true;
+				}
+			}
+		}
+		else{
+			//pterodactyl behaviour, pterodactyl is the only one in the screen
+			pt.x-=speedUpdatePixels;
+			pt.isNight = nightModeActive;
 
-			int obsX = obstacles[i].x;
-			int obsY = obstacles[i].y;
-			if(dino.detectCollision(obsX, obsY)){
+			if(distance % PT_ANIMATION_INTERVAL == 0){
+				//animate pterodactyl
+				pt.animate();
+			}
+
+			pt.display();
+
+			if(dino.detectCollision(pt.x, pt.y, pt.height, 40, true)){
+				//collision, game over
 				bGameOver = true;
-				break;
 			}
 
 		}
 
-		// animate dino and move dino
-		if(distance % SCORE_INC_INTERVAL == 0){
-			if(bGameOver == true){
-				dino.isDead = true;
-				dino.showDead();
-				if(dino.isDead == true){
-					bGameOver = false;
-					dino.isDead = false;
-					break;
-				}
+
+		if(bGameOver == true){
+			//show dead state
+			dino.showDead();
+			dino.display();
+			Xil_Out32(AUDIO_ACK_ADDR, DEATH); //play death sound
+			if(dino.isDead == true){
+				bGameOver = false;
+				dino.isDead = false;
+				break;
 			}
-			else if(bJumpState == true || (dino.isJumping == true)){
-				//jump state
-				dino.idle();
-				dino.updateJump();
-				dino.isJumping = true;
-				if(bJumpIdle == true){
-					dino.isJumping = false;
-					bJumpState = false;
-					dino.isJumpIdle = true;
-				}
-				else if(dino.y <= jump_height){
-					bJumpIdle = true;
-				}
+			dino.isDead = true;
+
+		}
+		else {
+			if(distance % SCORE_INC_INTERVAL == 0){
+				// animate dino and move dino
+				if(bJumpState == true || (dino.isJumping == true)){
+					//jump state
+					dino.idle();
+					dino.updateJump();
+					dino.isJumping = true;
+					if(bJumpIdle == true){
+						//idle state, back to running
+						dino.isJumping = false;
+						bJumpState = false;
+						dino.isJumpIdle = true;
+					}
+					else if(dino.y <= jump_height){
+						bJumpIdle = true;
+					}
 
 
-			}
-			else if(bDuckState == true){
-				//duck_state
-				dino.updateDuck();
-				buttonData = readButtons(input);
-				if(buttonData == BUTTON_NONE){
-					bDuckState = false;
 				}
-			}
-			else if((dino.isJumpIdle == true)){
-				//idle state at jump
-				dino.idle();
-				jump_count++;
-				if(jump_count == IDLE_COUNT){
-					dino.isJumpIdle = false;
-					jump_count = 0;
-					bJumpIdle = false;
-					dino.isFalling = true;
+				else if(bDuckState == true){
+					//duck_state
+					dino.updateDuck();
+					buttonData = readButtons(input);
+					if(buttonData == BUTTON_NONE){
+						bDuckState = false;
+					}
 				}
-			}
-			else if((dino.isFalling == true)){
-				dino.falling();
-				if(dino.y >= DINO_BASE_HEIGHT){
-					dino.isFalling = false;
-					dino.y = DINO_BASE_HEIGHT;
+				else if((dino.isJumpIdle == true)){
+					//idle state at jump
+					dino.idle();
+					jump_count++;
+					//interval before the dinosaur starts falling
+					if(jump_count == IDLE_COUNT){
+						dino.isJumpIdle = false;
+						jump_count = 0;
+						bJumpIdle = false;
+						dino.isFalling = true;
+					}
 				}
-			}
-			else{
-				dino.y = 512-DINO_IDLE_HEIGHT+15;
-				dino.animateRun();
+				else if((dino.isFalling == true)){
+					//falling state
+					dino.falling();
+					if(dino.y >= DINO_BASE_HEIGHT){
+						dino.isFalling = false;
+						dino.y = DINO_BASE_HEIGHT;
+					}
+				}
+				else{
+					//dino run
+					dino.y = 512-DINO_IDLE_HEIGHT+15;
+					dino.animateRun();
+				}
+
 			}
 
 		}
@@ -379,12 +451,6 @@ int GamePlay::gameplay(int highScore, XGpio* input_){
 
 		dino.display();
 
-//		// check if obstacle hit
-//		if(dino.detectCollision()){
-//			 printf("Obstacle Hit!\n");
-//			 dino.idle();
-//			 break;
-//		}
 
 		// remove background elements if off the screen
 		if(background[0].isOffScreen() && background.size() >= 1){
@@ -415,15 +481,16 @@ int GamePlay::gameplay(int highScore, XGpio* input_){
 
 		// generate new background elements
 		if(distance % nextBackgroundDistance == 0) {
-			nextBackgroundDistance = distance+BACK_GROUND_INTERVAL+(LFSR() % 70);
+			nextBackgroundDistance = distance+BACK_GROUND_INTERVAL+(rand() % 70);
 
 			if(nightModeActive){
+				Xil_Out32(AUDIO_ACK_ADDR, VRISKA);
 				// choose a star from group of 3
-			    nextStar = (LFSR() % 3);
+			    nextStar = (rand() % 3);
 
 				 allStars[nextStar].x = 1290;
 				 // y somewhere between 100 and 400
-				 allStars[nextStar].y = 100 + (LFSR() % (400 - 100 + 1 ));
+				 allStars[nextStar].y = 100 + (rand() % (400 - 100 + 1 ));
 				 allStars[nextStar].display();
 
 
@@ -432,7 +499,7 @@ int GamePlay::gameplay(int highScore, XGpio* input_){
 			} else {
 				 cloud.x = 1290;
 				 // y somewhere between 100 and 400
-				 cloud.y = 100 + (LFSR() % (400 - 100 + 1 ));
+				 cloud.y = 100 + (rand() % (400 - 100 + 1 ));
 				 cloud.display();
 
 				 background.push_back(cloud);
@@ -440,6 +507,7 @@ int GamePlay::gameplay(int highScore, XGpio* input_){
 		}
 
 		if(distance % BR_INTERVAL == 0) {
+			//add the other dinosaur
 			replaceCactiWithBR = true;
 		}
 
@@ -448,6 +516,7 @@ int GamePlay::gameplay(int highScore, XGpio* input_){
 		if(distance % nextCactiDistance == 0) {
 			nextCactiDistance = distance+CACTI_INTERVAL+(LFSR() % 20);
 
+			//generate the extra dino sprite
 			if(replaceCactiWithBR){
 			    replaceCactiWithBR = false;
 			    br.x = 1290;
@@ -456,7 +525,7 @@ int GamePlay::gameplay(int highScore, XGpio* input_){
 				obstacles.push_back(br);
 			} else {
 				// choose a cacti from group of 11
-				nextCacti = (LFSR() % 11);
+				nextCacti = (rand() % 11);
 
 				if(nextCacti <= 6){
 					allCacti[nextCacti].x = 1290;
@@ -474,18 +543,17 @@ int GamePlay::gameplay(int highScore, XGpio* input_){
 
 		// generate new pterodactyl
 		if(distance % nextPterodactylDistance == 0) {
-			nextPterodactylDistance = distance+PT_INTERVAL+(LFSR() % 20);
-
-			 Obstacle pt(PTERODACTYL_1_WIDTH,PTERODACTYL_1_HEIGHT,PTERODACTYL_1_ADDR,PTERODACTYL_2_ADDR,PTERODACTYL_1_NIGHT_ADDR,PTERODACTYL_2_NIGHT_ADDR);
+			bPterodactyl = true;
+			nextPterodactylDistance = distance+PT_INTERVAL+(LFSR() % 100);
 
 
 			 pt.x = 1290;
-			 pt.y = 200 + (LFSR() % (400 - 200 + 1 ));
+			 pt.y = 200 + (rand() % (400 - 200 + 1 ));
 
 			 pt.display();
 
 			 // push new pt on to vector
-			 obstacles.push_back(pt);
+			 ptObstacles.push_back(pt);
 		}
 
 		// enable night mode if score is multiple of night mode interval
@@ -494,13 +562,15 @@ int GamePlay::gameplay(int highScore, XGpio* input_){
 			if(nightModeActive){
 				printf("finish night mode\n");
 				nightModeActive = false;
+				Xil_Out32(AUDIO_ACK_ADDR, IDLE);
+
 			} else {
 				nightModeActive = true;
 				printf("start night mode\n");
 			}
 		}
 
-
+		//update speed
 		if(distance % SPEED_INTERVAL == 0) {
 			speedUpdatePixels++;
 		}

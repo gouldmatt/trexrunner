@@ -1,4 +1,10 @@
-//header file for base class sprite and child classes Dino and Obstacle 
+/*
+ * Created by: Matthew Gould
+ *	Sprite class: contains position and size of the sprite
+ *	Child classes:
+ *		Dino - contains functions and variables necessary for the dino sprite
+ *		Obstacles - contains functions and variables necessary for the different obstacles
+ */
 #ifndef SPRITE_H
 #define SPRITE_H
 
@@ -64,7 +70,7 @@ class Dino : public Sprite {
     public:
         Dino();
 
-        bool detectCollision(int obstacleX, int obstacleY);
+        bool detectCollision(int obstacleX, int obstacleY, int obstacleHeight, int speed, bool ptr);
 
         void idle();
 
@@ -94,7 +100,7 @@ class Dino : public Sprite {
 
 class Obstacle : public Sprite {
     public:
-		int distanceX;
+
         Obstacle();
 
         Obstacle(int w, int h, int dayAddress, int nightAddress);
@@ -108,6 +114,7 @@ class Obstacle : public Sprite {
         int frameTwoDay = 0;
 
         int frameTwoNight = 0;
+
 
         void animate();
 };

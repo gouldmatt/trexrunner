@@ -8,6 +8,26 @@
 #ifndef SRC_HELPERS_SHARED_H_
 #define SRC_HELPERS_SHARED_H_
 
+/*																											*
+ * 								MACROS TO INTERACT WITH PS0 - VIDEO CORE									*
+ 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	 	*/
+
+/* AUDIO/VIDEO STATES */
+#define IDLE  0x0 //ack has been recieved
+#define ACK  0x01 //ack sent
+
+/* GAMEPLAY MACROS */
+
+#define START 0x03 //start game
+#define JUMP  0x05 //jump
+#define  POINT   0x07 //scores a point
+#define DEATH  0x09 //death state
+#define VRISKA 0x0B //night mode
+
+/* ADDRESSES IN MEMORY TO RECIEVE CORE STATE ACKNOLEDGEMENTS*/
+#define VIDEO_ACK_ADDR  0x025A328C
+#define AUDIO_ACK_ADDR  0x025A0290
+
 
 //gameplay constants
 const int END_SCORE = 100000;
@@ -110,6 +130,9 @@ const int STAR_1_ADDR = 0x024F7508;
 const int STAR_2_ADDR = 0x024F7D88;
 const int STAR_3_ADDR = 0x024F8608;
 const int BR_NIGHT_ADDR = 0x024F8E88;
+const int CREDIT_ADDR = 0x02508E88;
+const int HIGH_SCORES_ADDR = 0x02533C88;
+const int TITLE_ADDR = 0x02546288;
 
 //widths
 const int SCREEN_WIDTH = 1280;
@@ -173,6 +196,9 @@ const int MOON_7_WIDTH = 64;
 const int STAR_1_WIDTH = 32;
 const int STAR_2_WIDTH = 32;
 const int STAR_3_WIDTH = 32;
+const int CREDIT_WIDTH = 896;
+const int HIGH_SCORES_WIDTH = 384;
+const int TITLE_WIDTH = 960;
 
 //heights
 const int SCREEN_HEIGHT = 1024;
@@ -236,8 +262,11 @@ const int MOON_7_HEIGHT = 80;
 const int STAR_1_HEIGHT = 17;
 const int STAR_2_HEIGHT = 17;
 const int STAR_3_HEIGHT = 17;
+const int CREDIT_HEIGHT = 49;
+const int HIGH_SCORES_HEIGHT = 49;
+const int TITLE_HEIGHT = 72;
 
 const int DINO_BASE_HEIGHT =  512-DINO_IDLE_HEIGHT+15;
 const int HORIZONTAL_RUN_COLLISION = 100 + DINO_IDLE_WIDTH; //collision for x-axis
-
+const int TALLEST_SPRITE =  512-BR_HEIGHT+48;
 #endif /* SRC_HELPERS_SHARED_H_ */
